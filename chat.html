@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+      .container {
+          width: 777px;
+          margin: 0 auto;
+      }
+
+      .messages {
+          border: 1px solid darkgrey;
+          border-bottom: none;
+          width: 500px;
+          height: 240px;
+      }
+
+      #message {
+          width: 64%;
+          background-color: #f9f9f9;
+      }
+
+      .chat {
+          display: none;
+      }
+
+      .msg {
+          width: 100%;
+      }
+
+      .user {
+          float: left;
+          margin-right: 10px;
+          font-weight: bold;
+      }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="join-chat">
+        <label for="username">User JWT Token:</label>
+        <input type="text" id="jwt" name="username"/>
+        <label for="username">Chatter User ID</label>
+        <input type="text" id="chatteruserid" name="chatterusername"/>
+        <br>
+        <br>
+        <label for="chatID">Chat ID</label>
+        <input type="text" id="chatID" name="chatID"/>
+        <input type="button" id="join-chat" value="Join Chat"/>
+    </div>
+    <br/>
+    <div class="chat-info"></div>
+    <br/>
+    <div class="chat">
+        <div class="messages"></div>
+        <textarea name="message" id="message" cols="90" rows="5"
+                  placeholder="Enter your message..."></textarea><br/><br/>
+        <input type="button" id="send-message" data-username="" value="Send Message">&nbsp;
+        <input type="button" id="leave-chat" data-username="" value="Leave Chat">
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+     
+    
+  //  var socket = io() ;
+var socket;
+    $('#join-chat').click(function () {
+
+        var jwt = $.trim($('#jwt').val());
+        var chatteruserid = $.trim($('#chatteruserid').val());
+            $('.chat').show();
+            $('#leave-chat').data('username', jwt);
+            $('#send-message').data('username', jwt);
+            $('.join-chat').hide(); //hide the container for joining the chat room.
+              
+        if(jwt && chatteruserid){
+
+           socket =  io({transports: ['websocket'],query: `token=`+ jwt});
+           socket.on('messages', (data) =>{
+
+            console.log(data);
+
+           var html = "<div class='msg'><div class='txt'>" +data.from +': '+ data.message + "</div></div>";
+            $('.messages').append(html); 
+            $("#message").val("");
+         });
+            //socket.emit("join", { profileId: username,to:chatterusername });
+        }else{
+
+            alert("In valid user names")
+        }
+       
+    });
+
+    $("#send-message").click(function () {
+
+        debugger;
+        var username = $(this).data("username");
+        var chatteruserid = $.trim($('#chatteruserid').val());
+        var chatid = $.trim($('#chatID').val());
+        var message = $.trim($("#message").val());
+        console.log(socket)
+            socket.emit("chats", {
+                message: message,
+                to : chatteruserid,
+                chatid: chatid
+            });
+
+            var html = "<div class='msg'><div class='user'>me : </div><div class='txt'>" + message + "</div></div>";
+            $('.messages').append(html);
+            $("#message").val("");
+            
+            
+
+    });
+     console.log(socket)
+   
+
+</script>
+
+</body>
+</html>
