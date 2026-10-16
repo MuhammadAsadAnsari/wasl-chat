@@ -1,14 +1,1 @@
-const client = require('../helpers/mongodb');
-const { ObjectId } = require('mongodb');
-var _ = require('lodash');
-
-
-module.exports = {
-    createChat,
-    getChatDetailsById,
-    getChatMessages,
-    insertchat,
-    getchatId,
-    validateConversation,
-    getAllChats,
-};
+const client = require('../helpers/mongodb'); const { ObjectId } = require('mongodb'); var _ = require('lodash');   module.exports = {     createChat,     getChatDetailsById,     getChatMessages,     insertchat,     getchatId,     validateConversation,     getAllChats, };
